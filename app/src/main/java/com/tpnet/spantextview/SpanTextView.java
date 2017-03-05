@@ -1,4 +1,4 @@
-package com.tpnet.spantextview;
+package com.tpnet.imoocvideomerge.view;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -9,8 +9,11 @@ import android.graphics.Paint.FontMetricsInt;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
-import android.os.Build.VERSION;
+import android.os.Build;
+import android.support.annotation.ColorInt;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -31,56 +34,79 @@ import android.widget.TextView;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * TextView富文本类
+ * Created by Litp on 2017/2/23.
+ */
+@SuppressLint("AppCompatCustomView")
 public class SpanTextView extends TextView {
+
 
     private int mDefaultHintColor = 0x6633B5E5;    //点击时候的背景色，默认为淡绿色
 
     private final String mAddText = "加"; //添加 替换为图片的文字、创建完整Span时候的文字
 
-    public enum ImageFlag {
-        FRONT_IMAGE,   //在文字之前
-        REPLACE_IMAGE,  //替换文字为照片
-        AFTER_IMAGE,     //在文字之后
+    public final static String FRONT_IMAGE = "front_image";         //在文字之前
+    public final static String REPLACE_IMAGE = "replace_image";     //替换文字为照片
+    public final static String AFTER_IMAGE = "after_image";         //在文字之后
 
-    }
+    public final static String AUTO_SIZE = "auto_size";         //原来的图片大小
+    public final static String TEXT_SIZE = "text_size";         //文字的高度
+    public final static String APPOINT_SIZE = "appoint_size";   //指定大小，在后面添加指定的宽高数组
 
-    public enum ImageSizeFlag {
-        AUTO_SIZE,    //原来的图片大小
-        TEXT_SIZE,    //文字的高度
-        APPOINT_SIZE,  //指定大小，在后面添加指定的宽高数组
-    }
+
+
 
 
     public SpanTextView(Context context) {
         super(context);
     }
 
+
     public SpanTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
+
     protected void onFinishInflate() {
         super.onFinishInflate();
-        if (VERSION.SDK_INT >= 16) {
+        if (Build.VERSION.SDK_INT >= 16) {
             this.mDefaultHintColor = getHighlightColor();
         }
     }
+
+
+    public void setText(String text, @StringRes int formatRes) {
+        setText(String.format(getResources().getString(formatRes), text));
+    }
+
+    /**
+     * 格式化文本
+     * @param text
+     * @param formatRes
+     * @param color
+     */
+    public void setText(String text, @StringRes int formatRes, @ColorInt int color) {
+        setText(String.format(getResources().getString(formatRes), text));
+        setSpanTextColor(text, color);
+    }
+
 
 
     public int getmDefaultHintColor() {
         return mDefaultHintColor;
     }
 
-    public void setmDefaultHintColor(int mDefaultHintColor) {
+    public void setmDefaultHintColor(@ColorInt int mDefaultHintColor) {
         this.mDefaultHintColor = mDefaultHintColor;
     }
 
     /*--------------- 文字颜色  --------------*/
-    public void setSpanTextColor(int start, int color) {
+    public void setSpanTextColor(int start, @ColorInt int color) {
         setSpanTextColor(start, getText().length(), color);
     }
 
-    public void setSpanTextColor(String str, int color) {
+    public void setSpanTextColor(String str, @ColorInt int color) {
         int[] size = getStartAndEnd(str);
         setSpanTextColor(size[0], size[1], color);
     }
@@ -92,9 +118,11 @@ public class SpanTextView extends TextView {
      * @param end   结束的位置
      * @param color 要设置的颜色
      */
-    public void setSpanTextColor(int start, int end, int color) {
+    public void setSpanTextColor(int start, int end, @ColorInt int color) {
         setSpann(createSpan(new ForegroundColorSpan(color), start, end));
     }
+
+
 
     /*--------------- 文字大小  --------------*/
     public void setSpanTextSize(int start, int textSize) {
@@ -109,8 +137,8 @@ public class SpanTextView extends TextView {
     /**
      * 设置文字颜色
      *
-     * @param start 开始的位置
-     * @param end   结束的位置
+     * @param start    开始的位置
+     * @param end      结束的位置
      * @param textSize 要设置的大小，单位px，请自行根据sp转换
      */
     public void setSpanTextSize(int start, int end, int textSize) {
@@ -121,17 +149,17 @@ public class SpanTextView extends TextView {
 
     /*--------------- 文字背景  --------------*/
 
-    public void setSpanTextBack(String str, int color) {
+    public void setSpanTextBack(String str, @ColorInt int color) {
         int[] size = getStartAndEnd(str);
         setSpanTextBack(size[0], size[1], color, 0);
     }
 
-    public void setSpanTextBack(String str, int color, int radius) {
+    public void setSpanTextBack(String str, @ColorInt int color, int radius) {
         int[] size = getStartAndEnd(str);
         setSpanTextBack(size[0], size[1], color, radius);
     }
 
-    public void setSpanTextBack(int start, int end, int color) {
+    public void setSpanTextBack(int start, int end, @ColorInt int color) {
         setSpanTextBack(start, end, color, 0);
     }
 
@@ -143,13 +171,17 @@ public class SpanTextView extends TextView {
      * @param color  要设置的颜色
      * @param radius 背景的圆角像素，单位px
      */
-    public void setSpanTextBack(int start, int end, int color, int radius) {
+    public void setSpanTextBack(int start, int end, @ColorInt int color, int radius) {
         if (radius > 0) {
             setSpann(createSpan(new RadiusBackgroundSpan(color, radius), start, end));
             return;
         }
         setSpann(createSpan(new BackgroundColorSpan(color), start, end));
     }
+
+
+
+
 
     /*--------------- 文字链接  --------------*/
 
@@ -162,7 +194,7 @@ public class SpanTextView extends TextView {
     }
 
 
-    public void setSpanLink(String text, String sign, boolean isUnderLineVisiable, int color) {
+    public void setSpanLink(String text, String sign, boolean isUnderLineVisiable, @ColorInt int color) {
         int[] array = getStartAndEnd(text);
         setSpanLink(array[0], array[1], sign, isUnderLineVisiable, color);
     }
@@ -181,9 +213,15 @@ public class SpanTextView extends TextView {
      * @param isUnderLineVisiable 是否显示下划线
      * @param color               文字的颜色
      */
-    public void setSpanLink(int start, int end, String sign, boolean isUnderLineVisiable, int color) {
-        setSpann(createSpan(new ClickSpan(new ClickListener(sign), isUnderLineVisiable, color), start, end));
-        setMovementMethod(LinkMovementMethod.getInstance());
+    public void setSpanLink(int start, int end, String sign, boolean isUnderLineVisiable, @ColorInt int color) {
+        try{
+            //防止字符不存在异常
+            setSpann(createSpan(new ClickSpan(new ClickListener(getText().subSequence(start, end), sign), isUnderLineVisiable, color), start, end));
+            setMovementMethod(LinkMovementMethod.getInstance());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 
 
@@ -203,17 +241,17 @@ public class SpanTextView extends TextView {
 
     /*--------------- 添加图片到最后面  --------------*/
 
-    public void setImageToLast(int imgId) {
+    public void setImageToLast(@DrawableRes int imgId) {
         Drawable drawable = getResources().getDrawable(imgId);
-        setImageToLast(drawable, ImageSizeFlag.AUTO_SIZE);
+        setImageToLast(drawable, SpanTextView.AUTO_SIZE);
     }
 
-    public void setImageToLast(int imgId, ImageSizeFlag sizeFlag, int[]... size) {
+    public void setImageToLast(@DrawableRes int imgId, String sizeFlag, int[]... size) {
         Drawable drawable = getResources().getDrawable(imgId);
         setImageToLast(drawable, sizeFlag, size);
     }
 
-    public void setImageToLast(Drawable drawable, ImageSizeFlag sizeFlag, int[]... size) {
+    public void setImageToLast(Drawable drawable, String sizeFlag, int[]... size) {
         if (drawable != null) {
 
             size = calcDrawableSize(drawable, sizeFlag, size);
@@ -224,18 +262,18 @@ public class SpanTextView extends TextView {
     }
 
     /*--------------- 添加图片到最前面 --------------*/
-    public void setImageToFirst(int imgId) {
+    public void setImageToFirst(@DrawableRes int imgId) {
         Drawable drawable = getResources().getDrawable(imgId);
-        setImageToFirst(drawable, ImageSizeFlag.AUTO_SIZE);
+        setImageToFirst(drawable, SpanTextView.AUTO_SIZE);
     }
 
-    public void setImageToFirst(int imgId, ImageSizeFlag sizeFlag, int[]... size) {
+    public void setImageToFirst(@DrawableRes int imgId, String sizeFlag, int[]... size) {
         Drawable drawable = getResources().getDrawable(imgId);
         setImageToFirst(drawable, sizeFlag, size);
     }
 
 
-    public void setImageToFirst(Drawable drawable, ImageSizeFlag sizeFlag, int[]... size) {
+    public void setImageToFirst(Drawable drawable, String sizeFlag, int[]... size) {
         if (drawable != null) {
 
             size = calcDrawableSize(drawable, sizeFlag, size);
@@ -254,11 +292,11 @@ public class SpanTextView extends TextView {
 
     /*--------------- 把文字替换成图片  --------------*/
 
-    public void replaceTextToImage(String text, int imgId) {
-        replaceTextToImage(text, getResources().getDrawable(imgId), ImageSizeFlag.AUTO_SIZE);
+    public void replaceTextToImage(String text, @DrawableRes int imgId) {
+        replaceTextToImage(text, getResources().getDrawable(imgId), SpanTextView.AUTO_SIZE);
     }
 
-    public void replaceTextToImage(String text, int imgId, ImageSizeFlag sizeFlag, int[]... size) {
+    public void replaceTextToImage(String text, @DrawableRes int imgId, String sizeFlag, int[]... size) {
         replaceTextToImage(text, getResources().getDrawable(imgId), sizeFlag, size);
     }
 
@@ -270,7 +308,7 @@ public class SpanTextView extends TextView {
      * @param sizeFlag 图片显示的大小
      * @param size     固定图片时候要设置的宽高
      */
-    public void replaceTextToImage(String text, Drawable drawable, ImageSizeFlag sizeFlag, int[]... size) {
+    public void replaceTextToImage(String text, Drawable drawable, String sizeFlag, int[]... size) {
         if (!TextUtils.isEmpty(text) || drawable != null) {
 
             Pattern pattern = Pattern.compile(text);
@@ -294,23 +332,24 @@ public class SpanTextView extends TextView {
 
     /*-----------  图片操作 ----------------*/
 
-    public void setImage(int imgId, String text, ImageFlag flag) {
-        setImage(getResources().getDrawable(imgId), text, flag, ImageSizeFlag.AUTO_SIZE);
+    public void setImage(@DrawableRes int imgId, String text, String flag) {
+        setImage(getResources().getDrawable(imgId), text, flag, SpanTextView.AUTO_SIZE);
     }
 
-    public void setImage(int imgId, String text, ImageFlag flag, ImageSizeFlag sizeFlag, int[]... size) {
+    public void setImage(@DrawableRes int imgId, String text, String flag, String sizeFlag, int[]... size) {
         setImage(getResources().getDrawable(imgId), text, flag, sizeFlag, size);
     }
+
     /**
      * 插入图片到指定位置，两个字符串的中间
      *
      * @param drawable 图片资源
-     * @param text  要操作的text
-     * @param flag  图片插入模式
+     * @param text     要操作的text
+     * @param flag     图片插入模式
      * @param sizeFlag 图片显示的大小
      * @param size     固定图片时候要设置的宽高
      */
-    public void setImage(Drawable drawable, String text, ImageFlag flag, ImageSizeFlag sizeFlag, int[]... size) {
+    public void setImage(Drawable drawable, String text, String flag, String sizeFlag, int[]... size) {
         switch (flag) {
             case FRONT_IMAGE:
                 insertImage(drawable, getStartAndEnd(text)[0], sizeFlag, size);
@@ -326,7 +365,7 @@ public class SpanTextView extends TextView {
 
 
     /*------------  插入图片-------------*/
-    public void insertImage(int imgId, int insertPosition, ImageSizeFlag sizeFlag, int[]... size) {
+    public void insertImage(@DrawableRes int imgId, int insertPosition, String sizeFlag, int[]... size) {
         insertImage(getResources().getDrawable(imgId), insertPosition, sizeFlag, size);
     }
 
@@ -335,10 +374,10 @@ public class SpanTextView extends TextView {
      *
      * @param drawable       图片Drawable
      * @param insertPosition 要插入的位置，0为从开头，getText.length()为最后
-     * @param sizeFlag 图片显示的大小
-     * @param size     固定图片时候要设置的宽高
+     * @param sizeFlag       图片显示的大小
+     * @param size           固定图片时候要设置的宽高
      */
-    public void insertImage(Drawable drawable, int insertPosition, ImageSizeFlag sizeFlag, int[]... size) {
+    public void insertImage(Drawable drawable, int insertPosition, String sizeFlag, int[]... size) {
 
         if (drawable != null) {
 
@@ -375,7 +414,7 @@ public class SpanTextView extends TextView {
      * @param flag     标识
      * @return 返回计算好的宽高
      */
-    private int[][] calcDrawableSize(Drawable drawable, ImageSizeFlag flag, int[]... s) {
+    private int[][] calcDrawableSize(Drawable drawable, String flag, int[]... s) {
         int[][] size = new int[1][2];
         switch (flag) {
             case AUTO_SIZE:
@@ -384,7 +423,7 @@ public class SpanTextView extends TextView {
                 break;
             case APPOINT_SIZE:
                 //指定宽高没有设置的话抛出异常
-                if (s == null || s.length <=0) {
+                if (s == null || s.length <= 0) {
                     throw new IllegalStateException("指定宽高状态下，需要添加参数设置宽高");
                 } else if (s[0][0] < 0 || s[0][1] < 0) {
                     throw new IllegalStateException("指定宽高状态下，宽或高不能为小于0");
@@ -465,9 +504,15 @@ public class SpanTextView extends TextView {
      */
     class ClickListener implements OnClickListener {
         private String sign = "";
+        private String text = "";
 
         ClickListener(String sign) {
             this.sign = sign;
+        }
+
+        ClickListener(CharSequence text, String sign) {
+            this.sign = sign;
+            this.text = String.valueOf(text);
         }
 
         public String getSign() {
@@ -481,7 +526,7 @@ public class SpanTextView extends TextView {
         public void onClick(View v) {
 
             //回调点击事件
-            mLinkClickListener.onLinkClick(v, this.sign);
+            mLinkClickListener.onLinkClick(v, this.text, this.sign);
 
             //实现点击显示一下背景
             //显示100毫秒背景后 变回透明
@@ -556,7 +601,7 @@ public class SpanTextView extends TextView {
         private int mRadius;
         private int mSize;
 
-        public RadiusBackgroundSpan(int color, int radius) {
+        public RadiusBackgroundSpan(@ColorInt int color, int radius) {
             this.mColor = color;
             this.mRadius = radius;
         }
@@ -634,7 +679,7 @@ public class SpanTextView extends TextView {
          * @param view 本身的Textview
          * @param sign 点击事件的标识
          */
-        void onLinkClick(View view, String sign);
+        void onLinkClick(View view, String text, String sign);
     }
 
 
