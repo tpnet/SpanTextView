@@ -1,5 +1,9 @@
 # SpanTextView
-TextView需要局部操作：点击某些局部文字的事件、颜色、大小、下划线、指定位置插入图片、添加图片等等，如果没经过封装，你需要在activty上写一堆的view操作代码。
+
+![效果图](http://img.blog.csdn.net/20170204155618495?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbml1Yml0aWFucGluZw==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
+
+
+TextView需要局部操作：点击某些局部文字的事件、颜色、大小、下划线、指定位置插入图片、添加图片，格式化文本等等，如果没经过封装，你需要在activty上写一堆的view操作代码。
 
 简单封装一下之后，我在TextView要设置第3-5的字母点击事件 和 “链接1”字符点击事件，代码只需要如下
 
@@ -27,7 +31,7 @@ tvTest.setOnLinkClickListener(new SpanTextView.onLinkClickListener() {
 ```
 
 
-又例如替换图片，插入图片，代码只需要如下:
+又例如替换图片，插入图片，代码只需要如下(图片支持插入、替换、居中、可设置宽高):
 
 ```
 //添加图片到最前面,文字的高度
@@ -59,8 +63,10 @@ tvTest.setSpanTextColor("颜色",Color.RED);
 //设置文本下划线
 tvTest.setUnderLine("下划线",true);
 ```
-
-图片支持插入、替换、居中、可设置宽高。
+例如格式化string.xml文本
+```
+tvTest.setText("要设置的文本",R.string.text);
+```
 
 封装了一些常用的，如果你需要的功能封装里面没有，你可以使用下面的代码进行设置Span
 
