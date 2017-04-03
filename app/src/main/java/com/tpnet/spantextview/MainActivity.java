@@ -12,6 +12,7 @@ public class MainActivity extends Activity {
 
 
     private SpanTextView tvTest;
+    private SpanTextView tvTestTwo;
 
     final String TAG = this.getClass().getSimpleName();
 
@@ -24,6 +25,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         tvTest = (SpanTextView) findViewById(R.id.tv_test);
+        tvTestTwo = (SpanTextView) findViewById(R.id.tv_test_two);
 
         //设置文本大小
         tvTest.setSpanTextSize("大小",30);
@@ -37,17 +39,17 @@ public class MainActivity extends Activity {
         tvTest.setUnderLine("下划线",true);
 
         //自定义设置Span
-        tvTest.setSpann(tvTest.createSpan(new TypefaceSpan("sans-serif"),1,5));
+        tvTest.setSpann(tvTest.createSpan(tvTest.getText(), new TypefaceSpan("sans-serif"), 1, 5));
 
         //添加图片到最前面,文字的高度
-        tvTest.setImageToFirst(R.drawable.one, SpanTextView.ImageSizeFlag.TEXT_SIZE);
+        tvTest.addImageToFirst(R.drawable.one, SpanTextView.TEXT_SIZE);
         //
 
         //添加图片到中间(中间添加的后面)
-        tvTest.setImage(R.drawable.two,"中间添加", SpanTextView.ImageFlag.AFTER_IMAGE);
+        tvTest.setImage(R.drawable.two, "中间添加", SpanTextView.AFTER_IMAGE);
 
         //添加图片到最后面
-        tvTest.setImageToLast(R.drawable.four);
+        tvTest.addImageToLast(R.drawable.four);
 
         //替换文本为图片
         //tvTest.setImage(R.drawable.three,"图片标识", SpanTextView.ImageFlag.REPLACE_IMAGE);
@@ -60,7 +62,7 @@ public class MainActivity extends Activity {
         tvTest.setSpanLink("链接3",SIGN_THREE);
         tvTest.setOnLinkClickListener(new SpanTextView.onLinkClickListener() {
             @Override
-            public void onLinkClick(View view, String sign) {
+            public void onLinkClick(View view, String text, String sign) {
                 String toast = "";
                 switch (sign){
                     case SIGN_ONE:
@@ -79,10 +81,17 @@ public class MainActivity extends Activity {
                 Log.e(TAG, "点击了"+toast);
             }
 
+
         });
 
-        //Toast.makeText(MainActivity.this,tvTest.length()+"",Toast.LENGTH_SHORT).show();
+
+        //设置省略文字，只显示100个
+        tvTestTwo.setOmit(100);
 
 
+        //设置省略文字，超出则显示1/3。缩放支持设置了span的文本
+        tvTest.setOmit(100);
+        
+        
     }
 }

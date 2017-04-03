@@ -3,12 +3,39 @@
     android:layout_width="match_parent" android:layout_height="match_parent"
     android:orientation="vertical"
 >
-    <com.tpnet.spantextview.SpanTextView
-        android:id="@+id/tv_test"
+
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="30sp"
-        android:text="下面测试:\n文字颜色\n文字大小\n文字普通背景\n文字圆角背景\n文字链接1，链接2，链接3\n文字下划线\n接下来插入图片\n接下来的图片标识替换为图片\n中间添加图片\n最后面添加图片"
-        />
+        android:layout_height="match_parent">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            >
+
+            <com.tpnet.spantextview.SpanTextView
+                android:id="@+id/tv_test"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="30sp"
+                android:text="(前面添加图片)下面测试:\n文字颜色\n文字大小\n文字普通背景\n文字圆角背景\n文字链接1，链接2，链接3\n文字下划线\n接下来插入图片\n接下来的图片标识替换为图片\n中间添加图片\n最后面添加图片"
+                />
+
+
+            <com.tpnet.spantextview.SpanTextView
+                android:id="@+id/tv_test_two"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:text="剧情介绍： 《功夫瑜伽》是由北京太合娱乐文化发展股份有限公司、耀莱影视文化传媒有限公司等联合出品的中印合拍功夫喜剧电影，由唐季礼执导，成龙、李治廷、张艺兴、母其弥雅、迪莎·帕塔尼、索努·苏德等主演。讲述了一位考古学家被一张千年前的地图所吸引，在中印两国间寻找“神秘宝石”的冒险的故事。 考古学教授Jack（成龙 饰）多年没有踏出学校，校长和学生都对他添油加醋的历史半信半疑。一次授课后，一个印度女孩找到Jack，用一张千年地图吸引了Jack的目光。于是Jack和挚友的儿子李琼斯（李治廷 饰）、助教小光（张艺兴 饰）组成“寻宝小分队”，为“神秘宝石”展开冒险，在迪拜和土豪飙车，在冰岛潜入神秘冰穴，在印度大战土狼，和印度贵族斗舞，动作喜剧再升级，打笑全世界。"
+                />
+
+
+        </LinearLayout>
+
+    </ScrollView>
+
 
 </LinearLayout>
