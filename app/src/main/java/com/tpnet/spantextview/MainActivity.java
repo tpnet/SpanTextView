@@ -43,7 +43,6 @@ public class MainActivity extends Activity {
 
         //添加图片到最前面,文字的高度
         tvTest.addImageToFirst(R.drawable.one, SpanTextView.TEXT_SIZE);
-        //
 
         //添加图片到中间(中间添加的后面)
         tvTest.setImage(R.drawable.two, "中间添加", SpanTextView.AFTER_IMAGE);
@@ -52,7 +51,7 @@ public class MainActivity extends Activity {
         tvTest.addImageToLast(R.drawable.four);
 
         //替换文本为图片
-        //tvTest.setImage(R.drawable.three,"图片标识", SpanTextView.ImageFlag.REPLACE_IMAGE);
+        //tvTest.setImage(R.drawable.three,"图片标识", SpanTextView.REPLACE_IMAGE);
         tvTest.replaceTextToImage("图片标识",R.drawable.three);
 
 
@@ -60,6 +59,8 @@ public class MainActivity extends Activity {
         tvTest.setSpanLink("链接1",SIGN_ONE,false,Color.GREEN);
         tvTest.setSpanLink("链接2",SIGN_TWO,false);
         tvTest.setSpanLink("链接3",SIGN_THREE);
+
+        //点击事件回调监听
         tvTest.setOnLinkClickListener(new SpanTextView.onLinkClickListener() {
             @Override
             public void onLinkClick(View view, String text, String sign) {
@@ -90,7 +91,7 @@ public class MainActivity extends Activity {
 
 
         //设置省略文字，超出则显示1/3。缩放支持设置了span的文本
-        tvTest.setOmit(100);
+        //tvTest.setOmit(100);
         
         
     }
