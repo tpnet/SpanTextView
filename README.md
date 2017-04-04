@@ -1,6 +1,6 @@
 # SpanTextView
 
-![效果图](http://img.blog.csdn.net/20170204155618495?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbml1Yml0aWFucGluZw==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
+![效果图](http://img.blog.csdn.net/20170404120219201?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbml1Yml0aWFucGluZw==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
 
 
 TextView需要局部操作：点击某些局部文字的事件、颜色、大小、下划线、指定位置插入图片、添加图片，格式化文本等等，如果没经过封装，你需要在activty上写一堆的view操作代码。
