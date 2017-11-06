@@ -330,12 +330,12 @@ public class SpanTextView extends TextView implements View.OnClickListener {
      * @param position 图片的位置，一个文本位置
      * @param sign     图片的标识
      */
-    private void setImageLinkSpan(int position, String sign) {
+    private void setImageLinkSpan(int position, String text, String sign) {
 
 
         if (!TextUtils.isEmpty(sign) && position != -1) {
 
-            ClickImageSpan span = new ClickImageSpan(new ClickImageListener(position, sign));
+            ClickImageSpan span = new ClickImageSpan(new ClickImageListener(position, text, sign));
 
             setSpann(
                     createSpan(getText(),
@@ -384,7 +384,7 @@ public class SpanTextView extends TextView implements View.OnClickListener {
             addSpann(true, createNormalSpan(span));
 
             if (sign.length > 0) {
-                setImageLinkSpan(getText().length(), sign[0]);
+                setImageLinkSpan(getText().length(), "", sign[0]);
             }
         }
 
@@ -411,7 +411,6 @@ public class SpanTextView extends TextView implements View.OnClickListener {
 
         CenterImageSpan span = null;
 
-
         if (drawable != null) {
 
             size = calcDrawableSize(drawable, sizeFlag, size);
@@ -427,7 +426,7 @@ public class SpanTextView extends TextView implements View.OnClickListener {
             setSpann(createSpan(getText(), span, 0, 1));
 
             if (sign != null && sign.length > 0) {
-                setImageLinkSpan(0, sign[0]);
+                setImageLinkSpan(0, "", sign[0]);
             }
 
         }
@@ -467,8 +466,6 @@ public class SpanTextView extends TextView implements View.OnClickListener {
             size = calcDrawableSize(drawable, sizeFlag, size);
             drawable.setBounds(0, 0, size[0], size[1]);
 
-
-
             //循环替换
             while (matcher.find()) {
                 CenterImageSpan span = new CenterImageSpan(drawable);
@@ -482,8 +479,97 @@ public class SpanTextView extends TextView implements View.OnClickListener {
         }
         return list;
 
+    }
+
+
+    /**
+     * 替换一个文本为图片 ，并且添加点击事件
+     *
+     * @param text
+     * @param position 从哪个位置开始
+     * @param drawable 图片
+     * @param sign     点击事件标识
+     */
+    public CenterImageSpan replaceOneTextToImage(String text, int position, Drawable drawable, @IMAGE_SIZE_FLAG int sizeFlag, int[] size, String sign) {
+
+        if (!TextUtils.isEmpty(text) || drawable != null) {
+
+            Pattern pattern = Pattern.compile(text);
+            Matcher matcher = pattern.matcher(getText());
+
+            size = calcDrawableSize(drawable, sizeFlag, size);
+            drawable.setBounds(0, 0, size[0], size[1]);
+
+            int i = 0;
+
+            //循环替换
+            while (matcher.find()) {
+
+                if (matcher.start() < position) {
+                    continue;
+                }
+
+                CenterImageSpan span = new CenterImageSpan(drawable);
+                setSpann(createSpan(getText(),
+                        span,
+                        matcher.start(),
+                        matcher.end()));
+
+                if (i == position) {
+                    setImageLinkSpan(matcher.start(), text, sign);
+                    return span;
+                }
+
+
+                i++;
+
+            }
+
+        }
+
+        return null;
 
     }
+
+
+    /**
+     * 替换图片span
+     *
+     * @param sign 标识
+     */
+    public CenterImageSpan replaceImageSpan(String sign, Drawable drawable, @IMAGE_SIZE_FLAG int sizeFlag, int[] size) {
+        ClickImageSpan imageSpan = mClickImageSpan.get(sign);
+
+        if (null != imageSpan) {
+            SpannableString span = (SpannableString) getText();
+
+
+            if (imageSpan.clickListener.position == 0) { //前面添加的
+                clearClickImageSpan(sign, 0);
+                Log.e("@@", "前面");
+                return addImageToFirst(drawable, sizeFlag, size, sign);
+            } else if (imageSpan.clickListener.position == getText().length()) {  //后面添加
+                clearClickImageSpan(sign, 0);
+                Log.e("@@", "最后");
+                return addImageToLast(drawable, sizeFlag, size, sign);
+            } else if (mAddText.equals(imageSpan.clickListener.text)) {   //中间插入
+                clearClickImageSpan(sign, 0);
+                Log.e("@@", "中间插入");
+                return replaceOneTextToImage(mAddText, imageSpan.clickListener.position, drawable, sizeFlag, size, sign);
+            } else {  //替换文本的
+                clearClickImageSpan(sign, 0);
+                Log.e("@@", "替换文本" + imageSpan.clickListener.position + " - " + getText().length());
+                return replaceOneTextToImage(imageSpan.clickListener.text, imageSpan.clickListener.position, drawable, sizeFlag, size, sign);
+            }
+
+
+        }
+
+        return null;
+
+    }
+
+
 
 
     public void setImage(@DrawableRes int imgId, String text, @TEXT_POSITION_FLAG int flag, String... sign) {
@@ -555,13 +641,11 @@ public class SpanTextView extends TextView implements View.OnClickListener {
                 setSpann(createSpan(getText(), new CenterImageSpan(drawable), insertPosition, insertPosition + 1));
 
                 if (sign != null && sign.length > 0) {
-                    setImageLinkSpan(insertPosition, sign[0]);
+                    setImageLinkSpan(insertPosition, mAddText,sign[0]);
                 }
 
             }
         }
-
-
     }
 
 
@@ -674,7 +758,7 @@ public class SpanTextView extends TextView implements View.OnClickListener {
      * @param span 需要清除的span
      * @param <T>  span类型
      */
-    public <T> void clearSpan(T span,T... spanMore) {
+    public <T> void clearSpan(T span, T... spanMore) {
         SpannableString ss = (SpannableString) getText();
         ss.removeSpan(span);
         for (T s : spanMore) {
@@ -682,15 +766,22 @@ public class SpanTextView extends TextView implements View.OnClickListener {
         }
     }
 
+
+    public int clearClickImageSpan(String sign) {
+        return clearClickImageSpan(sign,0);
+    }
+
+
     /**
      * 清除点击的span
      * @param sign 标识
+     * @param num 多次清除需要减去的数量
+     * @return 返回被清除的文字的长度
      */
-    public int clearClickImageSpan(String sign,int num){
+    private int clearClickImageSpan(String sign,int num){
 
         //清除图片添加的文字
         ClickImageSpan span = mClickImageSpan.get(sign);
-
 
         int position = span.clickListener.position - num;
 
@@ -700,31 +791,27 @@ public class SpanTextView extends TextView implements View.OnClickListener {
 
         String str = String.valueOf(getText().charAt(position));
 
-        Log.e("@@","次数："+sign+"   str:"+str);
+        mClickImageSpan.remove(span);
 
-
-        if(str.equals(mAddText)){
+        if (str.equals(mAddText)){ //自定义文字的形式替换图片
             SpannableString spannableFront = new SpannableString(getText().subSequence(0,position));
             SpannableString spannableAfter = new SpannableString(getText().subSequence(position + 1,getText().length()));
             addSpann(false,spannableFront,spannableAfter);
 
             return mAddText.length();
 
-        }else{
-            clearSpan(span);
         }
 
         return 0;
-
     }
 
 
     //没有省略字符时候的文本
-    CharSequence allText = "";
+    private CharSequence mAllText = "";
 
-    String mOmitText = "...展开全文";
-    int showNum;  //显示的字符数
-    int showColor;  //显示的字符颜色
+    public String mOmitText = "...展开全文";    //省略显示的文字
+    public int mOmitShowNum;  //显示的字符数
+    public int mOmitShowColor;  //显示的字符颜色
 
     public void setOmit(int showNum) {
         setOmit(showNum, getResources().getColor(R.color.colorAccent));
@@ -738,17 +825,17 @@ public class SpanTextView extends TextView implements View.OnClickListener {
      */
     public void setOmit(int showNum, @ColorInt int color) {
 
-        allText = getText();
+        mAllText = getText();
 
 
-        if (allText.length() < showNum) {
+        if (mAllText.length() < showNum) {
             //如果要显示文字超出总的长度，则隐藏2/3;
-            showNum = allText.length() / 3;
+            showNum = mAllText.length() / 3;
         }
 
-        this.showNum = showNum;
+        this.mOmitShowNum = showNum;
 
-        this.showColor = color;
+        this.mOmitShowColor = color;
 
         reSetOmit(true);
 
@@ -764,13 +851,13 @@ public class SpanTextView extends TextView implements View.OnClickListener {
     public void reSetOmit(boolean isScale) {
         if (isScale) {
             //设置省略字段
-            setText(getText().subSequence(0, showNum));
+            setText(getText().subSequence(0, mOmitShowNum));
 
             //添加展开全文
-            addSpann(true, createSpan(mOmitText, new ForegroundColorSpan(showColor), 0, mOmitText.length()));
+            addSpann(true, createSpan(mOmitText, new ForegroundColorSpan(mOmitShowColor), 0, mOmitText.length()));
 
         } else {
-            setText(allText);
+            setText(mAllText);
         }
     }
 
@@ -778,9 +865,8 @@ public class SpanTextView extends TextView implements View.OnClickListener {
     @Override
     public void onClick(View v) {
 
-
         //注意这里不能用文本equals，如果文本设置了Span会导致不相等
-        if (allText.length() == getText().length()) {
+        if (mAllText.length() == getText().length()) {
             //收缩
             reSetOmit(true);
         } else {
@@ -865,14 +951,21 @@ public class SpanTextView extends TextView implements View.OnClickListener {
 
 
     class ClickImageListener implements OnClickListener {
-        private String sign = "";
-        private int position = -1;
+        private String sign = "";  //标识
+        private int position = -1;  //起始位置
+
+        private String text = "";  // 替换的文本
 
         ClickImageListener(int position) {
             this.position = position;
         }
 
         ClickImageListener(int position, String sign) {
+            this.sign = sign;
+            this.position = position;
+        }
+
+        ClickImageListener(int position, String text, String sign) {
             this.sign = sign;
             this.position = position;
         }
@@ -957,8 +1050,7 @@ public class SpanTextView extends TextView implements View.OnClickListener {
      */
     @SuppressLint({"ParcelCreator"})
     private class NOUnderlineSpan extends UnderlineSpan {
-        NOUnderlineSpan() {
-        }
+        NOUnderlineSpan() {}
 
         public void updateDrawState(TextPaint ds) {
             ds.setUnderlineText(false);
@@ -1049,7 +1141,7 @@ public class SpanTextView extends TextView implements View.OnClickListener {
 
 
     /**
-     * 设置跑马灯效果
+     * 设置跑马灯效果,默认是无限次。如果需要设置次数，则使用 {@link #setMarqueeRepeatLimit}
      *
      * @param isMarquees 是否开启
      */
@@ -1058,6 +1150,7 @@ public class SpanTextView extends TextView implements View.OnClickListener {
             setEllipsize(TextUtils.TruncateAt.MARQUEE);
             setFocusable(true);
             setFocusableInTouchMode(true);
+            setMarqueeRepeatLimit(-1);
         } else {
             setEllipsize(TextUtils.TruncateAt.END);
             setFocusable(false);
@@ -1076,12 +1169,10 @@ public class SpanTextView extends TextView implements View.OnClickListener {
     //屏蔽点击
     @Override
     public boolean performClick() {
-        if (mLinkHit) {
-            return true;
-        }
-        return super.performClick();
+        return mLinkHit || super.performClick();
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         mLinkHit = false;

@@ -32,18 +32,27 @@
                 android:text="剧情介绍： 《功夫瑜伽》是由北京太合娱乐文化发展股份有限公司、耀莱影视文化传媒有限公司等联合出品的中印合拍功夫喜剧电影，由唐季礼执导，成龙、李治廷、张艺兴、母其弥雅、迪莎·帕塔尼、索努·苏德等主演。讲述了一位考古学家被一张千年前的地图所吸引，在中印两国间寻找“神秘宝石”的冒险的故事。 考古学教授Jack（成龙 饰）多年没有踏出学校，校长和学生都对他添油加醋的历史半信半疑。一次授课后，一个印度女孩找到Jack，用一张千年地图吸引了Jack的目光。于是Jack和挚友的儿子李琼斯（李治廷 饰）、助教小光（张艺兴 饰）组成“寻宝小分队”，为“神秘宝石”展开冒险，在迪拜和土豪飙车，在冰岛潜入神秘冰穴，在印度大战土狼，和印度贵族斗舞，动作喜剧再升级，打笑全世界。"
                 />
 
+
+            <com.tpnet.spantextview.SpanTextView
+                android:id="@+id/tv_text_three"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="这是一个用来测试的滚动的文本"
+                android:singleLine="true" />
+
+
             <Button
                 android:id="@+id/btn_clear"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="清除全部效果"
+                android:text="清除文本1全部效果"
                 />
 
             <Button
                 android:id="@+id/btn_clear_one"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="清除某个效果"
+                android:text="清除背景效果"
                 />
 
         </LinearLayout>

@@ -16,6 +16,8 @@ public class MainActivity extends Activity {
     private SpanTextView tvTestTwo;
     private Button btnClear;
     private Button btnClearOne;
+    private SpanTextView tvTextThree;
+
 
 
     private SpanTextView.RadiusBackgroundSpan mBackSpan;
@@ -33,8 +35,6 @@ public class MainActivity extends Activity {
     private final String SIGN_PIC_FOUR = "pic_four";
     private final String SIGN_PIC_FIVE = "pic_five";
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +43,12 @@ public class MainActivity extends Activity {
         tvTestTwo = (SpanTextView) findViewById(R.id.tv_test_two);
         btnClear = (Button) findViewById(R.id.btn_clear);
         btnClearOne = (Button) findViewById(R.id.btn_clear_one);
+        tvTextThree = (SpanTextView) findViewById(R.id.tv_text_three);
+
+
+        //文本开启跑马灯效果
+        tvTextThree.setMarquee(true);
+
 
         //设置文本大小
         tvTest.setSpanTextSize("大小",30);
@@ -68,7 +74,10 @@ public class MainActivity extends Activity {
         tvTest.addImageToLast(R.drawable.four,SIGN_PIC_THREE);
         //替换文本为图片
         //tvTest.setImage(R.drawable.three,"图片标识", SpanTextView.REPLACE_IMAGE);
-        tvTest.replaceTextToImage("图片标识",R.drawable.three);
+        //tvTest.replaceTextToImage("图片标识",R.drawable.three);
+
+        tvTest.replaceOneTextToImage("图片标识", 0, getResources().getDrawable(R.drawable.three), SpanTextView.TEXT_SIZE, new int[2], SIGN_PIC_FOUR);
+
 
 
         //设置点击事件
@@ -110,27 +119,27 @@ public class MainActivity extends Activity {
                 String toast = "";
                 switch (sign){
                     case SIGN_PIC_ONE:
-                        toast = "图片链接1"+position;
+                        toast = "图片链接1-" + position;
                         break;
                     case SIGN_PIC_TWO:
-                        toast = "图片链接2"+position;
+                        toast = "图片链接2-" + position;
 
                         break;
                     case SIGN_PIC_THREE:
-                        toast = "图片链接3"+position;
+                        toast = "图片链接3-" + position;
+
+                        //替换最后图片为图片1，
+                        tvTest.replaceImageSpan(sign, getResources().getDrawable(R.drawable.one), SpanTextView.TEXT_SIZE, new int[2]);
 
                         break;
                     case SIGN_PIC_FOUR:
-                        toast = "图片链接3"+position;
+                        toast = "图片链接4-" + position;
                         break;
                 }
                 Toast.makeText(MainActivity.this,"点击了"+toast,Toast.LENGTH_SHORT).show();
                 Log.e(TAG, "点击了"+toast);
             }
         });
-
-
-
 
         //设置省略文字，只显示100个
         tvTestTwo.setOmit(100);
