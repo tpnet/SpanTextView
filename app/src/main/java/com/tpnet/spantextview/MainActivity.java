@@ -48,6 +48,8 @@ public class MainActivity extends Activity {
 
         //文本开启跑马灯效果
         tvTextThree.setMarquee(true);
+        //设置跑马灯的次数
+        //tvTextThree.setMarqueeRepeatLimit(10);
 
 
         //设置文本大小
